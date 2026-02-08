@@ -1,6 +1,6 @@
 {
   "name": "codex-web-app",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Website version of the Codex app with mobile-ready UI and local runtime controls.",
   "private": true,
   "type": "module",
@@ -13,7 +13,9 @@
     "stop": "node scripts/codex-web.mjs stop",
     "status": "node scripts/codex-web.mjs status",
     "selftest": "node scripts/codex-web.mjs selftest",
+    "capture:real": "node scripts/capture_real_media.mjs",
+    "check:media": "node scripts/check-readme-media.mjs",
     "test": "node --test",
-    "check": "npm run test && npm run selftest"
+    "check": "npm run test && npm run selftest && npm run check:media"
   }
 }

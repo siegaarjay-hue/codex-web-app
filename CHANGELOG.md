@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 - 2026-02-08
+
+- Replaced stylized README visuals with real literal bridge captures.
+- Added real media capture pipeline (`scripts/capture_real_media.mjs`) with GIF and MP4 output.
+- Added README media integrity check (`scripts/check-readme-media.mjs`) and wired it into `npm run check`.
+- Created and pinned `good first issue` tasks for contributor onboarding.
+- Updated CI workflow and documentation to target `main`.
+
 ## 1.0.0 - 2026-02-08
 
 - Initial standalone repository created.

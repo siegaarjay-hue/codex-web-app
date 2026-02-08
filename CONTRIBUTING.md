@@ -2,6 +2,19 @@
 
 Thanks for helping improve this project.
 
+## 10-Minute First Contribution Path
+
+1. Pick a starter ticket from the `good first issue` set in `README.md`.
+2. Run setup and checks locally:
+
+```bash
+npm install
+npm run check
+```
+
+3. Make one focused change and re-run `npm run check`.
+4. Open a PR using `.github/pull_request_template.md`.
+
 ## Setup
 
 ```bash
@@ -15,11 +28,13 @@ npm run check
 - Add or update tests for behavior changes.
 - Preserve mobile responsiveness.
 - Do not commit secrets or tokens.
+- Use real captures (not mockups) for README media updates.
 
 ## Pull Request Checklist
 
 - [ ] `npm run test` passes
 - [ ] `npm run selftest` passes
+- [ ] `npm run check:media` passes
 - [ ] Docs updated when behavior changes
 - [ ] No broken mobile layout
 

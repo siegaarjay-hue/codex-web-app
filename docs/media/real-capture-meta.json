@@ -1,0 +1,20 @@
+{
+  "url": "http://127.0.0.1:6088/",
+  "capturedAt": "2026-02-08T08:24:55.021Z",
+  "states": {
+    "desktop": {
+      "sidebarOpened": true,
+      "sidebarClosed": false
+    },
+    "mobile": {
+      "sidebarOpened": true,
+      "sidebarClosed": true,
+      "frames": 12
+    }
+  },
+  "animation": {
+    "ok": true,
+    "mp4Path": "/data/data/com.termux/files/home/codex-web-app/docs/media/real-mobile-sidebar-demo.mp4",
+    "gifPath": "/data/data/com.termux/files/home/codex-web-app/docs/media/real-mobile-sidebar-demo.gif"
+  }
+}

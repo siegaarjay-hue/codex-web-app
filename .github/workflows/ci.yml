@@ -2,16 +2,16 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
   test:
-    name: Test and Selftest
+    name: Test, Selftest, and Media Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -28,8 +28,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Unit tests
-        run: npm run test
-
-      - name: End-to-end selftest
-        run: npm run selftest
+      - name: Run all checks
+        run: npm run check
