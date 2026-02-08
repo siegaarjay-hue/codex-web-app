@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test:
-    name: Test, Selftest, and Media Validation
+    name: Test, Selftest, and Repo Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
 

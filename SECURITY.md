@@ -2,7 +2,7 @@
 
 ## Supported Version
 
-The `master` branch is the supported line.
+The `main` branch is the supported line.
 
 ## Reporting
 

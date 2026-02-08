@@ -35,6 +35,7 @@ npm run stop
 - CI checks on every push and pull request to `main`.
 - Reproducible media capture pipeline for README assets.
 - Contributor docs, issue templates, and release checklist.
+- Public safety docs: `SECURITY.md`, `CODE_OF_CONDUCT.md`, `docs/PRIVACY.md`.
 
 ## Product Captures
 
@@ -60,6 +61,7 @@ npm run stop          # stop background process
 npm run test          # node unit/integration tests
 npm run selftest      # end-to-end command health check
 npm run check:media   # verify README media links are valid
+npm run check:public  # verify public-readiness guardrails
 npm run check         # test + selftest + media validation
 npm run capture:media # regenerate screenshots/gif/mp4
 ```
@@ -130,6 +132,7 @@ Workflow file: `.github/workflows/ci.yml`
 - Research references: `docs/RESEARCH.md`
 - Legal and attribution: `docs/LEGAL.md`
 - Notice file: `NOTICE`
+- Privacy notes: `docs/PRIVACY.md`
 
 ## Contributing
 
