@@ -16,6 +16,7 @@ const URL = process.env.CODEX_CAPTURE_URL ?? "http://127.0.0.1:6070/";
 const CHROME_PATH =
   process.env.CHROMIUM_PATH ??
   "/data/data/com.termux/files/home/.cache/ms-playwright/chromium-1208/chrome-linux/chrome";
+const REDACT_THREAD_HISTORY = process.env.CODEX_REDACT_THREAD_HISTORY !== "0";
 
 const FRAME_COUNT = 12;
 
@@ -95,6 +96,48 @@ async function clickOutsideSidebar(page) {
 
 async function isRightPaneOpen(page) {
   return isVisibleText(page, /Uncommitted changes/i);
+}
+
+async function setPrivacyMask(page, enabled) {
+  if (!REDACT_THREAD_HISTORY) {
+    return;
+  }
+
+  await page.evaluate((isEnabled) => {
+    const id = "codex-capture-privacy-mask";
+    const existing = document.getElementById(id);
+
+    if (!isEnabled) {
+      existing?.remove();
+      return;
+    }
+
+    const mask = existing ?? document.createElement("div");
+    mask.id = id;
+
+    const mobile = window.innerWidth <= 600;
+    const left = 14;
+    const top = mobile ? 170 : 180;
+    const width = mobile ? Math.max(window.innerWidth - 28, 0) : 260;
+    const height = mobile ? Math.min(window.innerHeight - 225, 560) : Math.min(window.innerHeight - 230, 640);
+
+    Object.assign(mask.style, {
+      position: "fixed",
+      left: `${left}px`,
+      top: `${top}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+      background: "rgb(243, 244, 246)",
+      borderRadius: "12px",
+      boxShadow: "inset 0 0 0 1px rgb(229, 231, 235)",
+      pointerEvents: "none",
+      zIndex: "2147483647",
+    });
+
+    if (!existing) {
+      document.body.append(mask);
+    }
+  }, enabled);
 }
 
 async function ensureRightPaneClosed(page) {
@@ -257,7 +300,9 @@ async function capture() {
     if (!desktopSidebarOpened) {
       throw new Error("Could not open desktop sidebar reliably");
     }
+    await setPrivacyMask(desktop, true);
     await desktop.screenshot({ path: path.join(MEDIA_DIR, "real-desktop-sidebar.png"), fullPage: true });
+    await setPrivacyMask(desktop, false);
 
     const desktopSidebarClosed = await ensureSidebarClosed(desktop);
 
@@ -277,7 +322,9 @@ async function capture() {
     if (!mobileSidebarOpened) {
       throw new Error("Could not open mobile sidebar reliably");
     }
+    await setPrivacyMask(mobile, true);
     await mobile.screenshot({ path: path.join(MEDIA_DIR, "real-mobile-sidebar-open.png"), fullPage: true });
+    await setPrivacyMask(mobile, false);
 
     const mobileSidebarClosed = await ensureSidebarClosed(mobile);
     if (!mobileSidebarClosed) {
@@ -285,17 +332,20 @@ async function capture() {
     }
 
     for (let i = 0; i < FRAME_COUNT; i += 1) {
-      if (i % 2 === 0) {
+      const opening = i % 2 === 0;
+      if (opening) {
         await ensureSidebarOpen(mobile);
       } else {
         await ensureSidebarClosed(mobile);
       }
+      await setPrivacyMask(mobile, opening);
       await mobile.waitForTimeout(220);
       await mobile.screenshot({
         path: path.join(FRAMES_DIR, `frame-${String(i).padStart(2, "0")}.png`),
         fullPage: true,
       });
     }
+    await setPrivacyMask(mobile, false);
 
     await mobile.close();
 
