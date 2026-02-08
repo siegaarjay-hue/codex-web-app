@@ -30,7 +30,7 @@ npm run stop
 
 ## Why This Repo Feels Production-Ready
 
-- Mobile sidebar open/close flow is handled explicitly to prevent overlap regressions.
+- Mobile composer flow is demoed with real type-and-send behavior.
 - Runtime controls are simple and memorable: `start`, `stop`, `status`, `selftest`.
 - CI enforces quality on every push and pull request to `main`.
 - Real media capture pipeline keeps README proof honest and reproducible.
@@ -39,16 +39,16 @@ npm run stop
 ## Real Product Captures
 
 ### Desktop
-![Real Desktop Sidebar (Redacted)](docs/media/real-desktop-sidebar-redacted.png)
+![Real Desktop Home](docs/media/real-desktop-home.png)
 
 ### Mobile
 ![Real Mobile Home](docs/media/real-mobile-home.png)
-![Real Mobile Sidebar Open (Redacted)](docs/media/real-mobile-sidebar-open-redacted.png)
+![Real Mobile Composer](docs/media/real-mobile-composer.png)
 
-### Sidebar Motion (Real)
-![Real Mobile Sidebar Demo (Redacted)](docs/media/real-mobile-sidebar-demo-redacted.gif)
+### Composer Motion (Real + Cursor)
+![Real Message Composer Demo](docs/media/real-message-demo.gif)
 
-[Download the real MP4 capture (redacted)](docs/media/real-mobile-sidebar-demo-redacted.mp4)
+[Download the real MP4 capture](docs/media/real-message-demo.mp4)
 
 ## Commands
 
@@ -83,11 +83,10 @@ npm run capture:real
 Outputs are written to `docs/media/`:
 
 - `real-desktop-home.png`
-- `real-desktop-sidebar-redacted.png`
 - `real-mobile-home.png`
-- `real-mobile-sidebar-open-redacted.png`
-- `real-mobile-sidebar-demo-redacted.gif`
-- `real-mobile-sidebar-demo-redacted.mp4`
+- `real-mobile-composer.png`
+- `real-message-demo.gif`
+- `real-message-demo.mp4`
 
 Troubleshooting:
 
