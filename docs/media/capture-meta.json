@@ -1,0 +1,17 @@
+{
+  "url": "http://127.0.0.1:6070/",
+  "capturedAt": "2026-02-08T13:05:26.177Z",
+  "outputs": {
+    "desktopHome": "desktop-home.png",
+    "mobileHome": "mobile-home.png",
+    "mobileComposer": "mobile-composer.png",
+    "demoMp4": "message-demo.mp4",
+    "demoGif": "message-demo.gif"
+  },
+  "promptText": "Write a 3-bullet mobile UX summary for this app.",
+  "animation": {
+    "ok": true,
+    "mp4Path": "docs/media/message-demo.mp4",
+    "gifPath": "docs/media/message-demo.gif"
+  }
+}

@@ -9,7 +9,7 @@ Community-built Codex-style web app runtime with mobile-oriented behavior and lo
 
 All screenshots and animations in this README were captured from a running literal bridge session.
 
-![Real Desktop Home](docs/media/real-desktop-home.png)
+![Desktop Home](docs/media/desktop-home.png)
 
 ## Quick Start
 
@@ -30,25 +30,25 @@ npm run stop
 
 ## What's Included
 
-- Mobile composer flow capture with real type-and-send behavior.
+- Mobile composer flow capture with type-and-send behavior.
 - Runtime controls: `start`, `stop`, `status`, `selftest`.
 - CI checks on every push and pull request to `main`.
 - Reproducible media capture pipeline for README assets.
 - Contributor docs, issue templates, and release checklist.
 
-## Real Product Captures
+## Product Captures
 
 ### Desktop
-![Real Desktop Home](docs/media/real-desktop-home.png)
+![Desktop Home](docs/media/desktop-home.png)
 
 ### Mobile
-![Real Mobile Home](docs/media/real-mobile-home.png)
-![Real Mobile Composer](docs/media/real-mobile-composer.png)
+![Mobile Home](docs/media/mobile-home.png)
+![Mobile Composer](docs/media/mobile-composer.png)
 
-### Composer Motion (Real + Cursor)
-![Real Message Composer Demo](docs/media/real-message-demo.gif)
+### Composer Motion (with Cursor)
+![Message Composer Demo](docs/media/message-demo.gif)
 
-[Download the real MP4 capture](docs/media/real-message-demo.mp4)
+[Download MP4 capture](docs/media/message-demo.mp4)
 
 ## Commands
 
@@ -61,42 +61,43 @@ npm run test          # node unit/integration tests
 npm run selftest      # end-to-end command health check
 npm run check:media   # verify README media links are valid
 npm run check         # test + selftest + media validation
-npm run capture:real  # regenerate real screenshots/gif/mp4
+npm run capture:media # regenerate screenshots/gif/mp4
 ```
 
-## Real Media Capture Workflow
+## Media Capture Workflow
 
-Start the literal web bridge (clean capture session):
+Capture command:
 
 ```bash
-cd /data/data/com.termux/files/home/Codex-App-Linux/codex-linux
-./codex-literal-web.sh start
+npm run capture:media
 ```
 
-Then regenerate all real README media:
+What it does by default:
 
-```bash
-cd /data/data/com.termux/files/home/codex-web-app
-npm run capture:real
-```
+- Uses an isolated runtime state in `.runtime/capture-literal-state` and `.runtime/capture-workspace`.
+- Starts a literal bridge automatically at `http://127.0.0.1:6070/` when needed.
+- Captures desktop/mobile screenshots plus GIF/MP4 composer motion with cursor.
 
 Outputs are written to `docs/media/`:
 
-- `real-desktop-home.png`
-- `real-mobile-home.png`
-- `real-mobile-composer.png`
-- `real-message-demo.gif`
-- `real-message-demo.mp4`
+- `desktop-home.png`
+- `mobile-home.png`
+- `mobile-composer.png`
+- `message-demo.gif`
+- `message-demo.mp4`
 
-Troubleshooting:
+Notes:
 
-- If captures show loading states, run `npm run capture:real` again after bridge health is stable (`curl http://127.0.0.1:6070/healthz`).
+- Capture needs `ffmpeg` on `PATH` and a Playwright Chromium install (`npx playwright install chromium`).
+- Set `CODEX_LITERAL_BRIDGE_CMD` if your `codex-literal-web.sh` is in a different location.
+- Set `CODEX_CAPTURE_URL` if you want a different capture port.
+- If captures still show loading states, rerun after bridge health is stable (`curl http://127.0.0.1:6070/healthz`).
 
 ## Good First Issues
 
 - [#1 Add visual regression test for mobile sidebar behavior](https://github.com/siegaarjay-hue/codex-web-app/issues/1)
-- [#2 Document real media capture workflow for README assets](https://github.com/siegaarjay-hue/codex-web-app/issues/2)
-- [#3 Add npm script for real capture and media sanity check](https://github.com/siegaarjay-hue/codex-web-app/issues/3)
+- [#2 Document media capture workflow for README assets](https://github.com/siegaarjay-hue/codex-web-app/issues/2)
+- [#3 Add npm script for media capture and media sanity check](https://github.com/siegaarjay-hue/codex-web-app/issues/3)
 - [#4 Improve first-time contributor experience in CONTRIBUTING.md](https://github.com/siegaarjay-hue/codex-web-app/issues/4)
 
 ## CI Quality Gate
@@ -114,7 +115,7 @@ Workflow file: `.github/workflows/ci.yml`
 - `assets/`: bundled JS/CSS/fonts/images
 - `scripts/server.mjs`: static + API server
 - `scripts/codex-web.mjs`: runtime command wrapper
-- `scripts/capture_real_media.mjs`: real screenshot/gif/mp4 capture script
+- `scripts/capture_media.mjs`: screenshot/gif/mp4 capture script
 - `scripts/check-readme-media.mjs`: README media link validator
 - `tests/server.test.mjs`: API and security regression tests
 

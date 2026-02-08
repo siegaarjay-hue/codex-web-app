@@ -1,35 +1,149 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { chromium } from "/data/data/com.termux/files/home/node_modules/playwright-core/index.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const MEDIA_DIR = path.join(PROJECT_ROOT, "docs", "media");
-const FRAMES_DIR = path.join(MEDIA_DIR, "real-message-frames");
+const FRAMES_DIR = path.join(MEDIA_DIR, "message-frames");
 
-const URL = process.env.CODEX_CAPTURE_URL ?? "http://127.0.0.1:6070/";
-const CHROME_PATH =
-  process.env.CHROMIUM_PATH ??
-  "/data/data/com.termux/files/home/.cache/ms-playwright/chromium-1208/chrome-linux/chrome";
+const CAPTURE_URL = process.env.CODEX_CAPTURE_URL ?? "http://127.0.0.1:6070/";
+const CHROME_PATH = process.env.CHROMIUM_PATH;
+const BRIDGE_LAUNCHER =
+  process.env.CODEX_LITERAL_BRIDGE_CMD ??
+  path.join(PROJECT_ROOT, "..", "Codex-App-Linux", "codex-linux", "codex-literal-web.sh");
+const CAPTURE_STATE_DIR = process.env.CODEX_CAPTURE_STATE_DIR ?? path.join(PROJECT_ROOT, ".runtime", "capture-literal-state");
+const CAPTURE_WORKSPACE_ROOT =
+  process.env.CODEX_CAPTURE_WORKSPACE_ROOT ?? path.join(PROJECT_ROOT, ".runtime", "capture-workspace");
 
 const OUTPUT = {
-  desktopHome: "real-desktop-home.png",
-  mobileHome: "real-mobile-home.png",
-  mobileComposer: "real-mobile-composer.png",
-  demoMp4: "real-message-demo.mp4",
-  demoGif: "real-message-demo.gif",
+  desktopHome: "desktop-home.png",
+  mobileHome: "mobile-home.png",
+  mobileComposer: "mobile-composer.png",
+  demoMp4: "message-demo.mp4",
+  demoGif: "message-demo.gif",
 };
 
 const PROMPT_TEXT = "Write a 3-bullet mobile UX summary for this app.";
 const FRAME_STEPS = 12;
+const BRIDGE_BOOT_TIMEOUT_MS = Number(process.env.CODEX_CAPTURE_BOOT_TIMEOUT_MS ?? 20_000);
 
 async function ensureDir() {
   await fs.mkdir(MEDIA_DIR, { recursive: true });
+}
+
+function toProjectRelative(filePath) {
+  return path.relative(PROJECT_ROOT, filePath).split(path.sep).join("/");
+}
+
+async function loadChromium() {
+  try {
+    const playwright = await import("playwright");
+    if (playwright.chromium) return playwright.chromium;
+  } catch {
+    // Fall through to playwright-core.
+  }
+
+  try {
+    const playwrightCore = await import("playwright-core");
+    if (playwrightCore.chromium) return playwrightCore.chromium;
+  } catch {
+    // Fall through to guidance error.
+  }
+
+  throw new Error(
+    'Playwright is required for media capture. Run "npm install --save-dev playwright" then "npx playwright install chromium".'
+  );
+}
+
+function normalizeCaptureUrl(rawUrl) {
+  const url = new URL(rawUrl);
+  if (!url.pathname) {
+    url.pathname = "/";
+  }
+  return url;
+}
+
+function healthzUrl(rawUrl) {
+  const url = normalizeCaptureUrl(rawUrl);
+  url.pathname = "/healthz";
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
+async function waitForBridge(url, timeoutMs = BRIDGE_BOOT_TIMEOUT_MS) {
+  const deadline = Date.now() + timeoutMs;
+  const endpoint = healthzUrl(url);
+
+  while (Date.now() < deadline) {
+    const ok = await new Promise((resolve) => {
+      const request = http.get(endpoint, (response) => {
+        response.resume();
+        resolve(response.statusCode === 200);
+      });
+      request.on("error", () => resolve(false));
+      request.setTimeout(1200, () => {
+        request.destroy();
+        resolve(false);
+      });
+    });
+
+    if (ok) {
+      return true;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
+  }
+
+  return false;
+}
+
+function runBridgeCommand(action, env) {
+  const cwd = BRIDGE_LAUNCHER.includes(path.sep) ? path.dirname(BRIDGE_LAUNCHER) : PROJECT_ROOT;
+  const result = spawnSync(BRIDGE_LAUNCHER, [action], {
+    cwd,
+    env,
+    encoding: "utf8",
+  });
+
+  return {
+    ok: result.status === 0,
+    status: result.status,
+    stderr: (result.stderr || "").trim(),
+    stdout: (result.stdout || "").trim(),
+    launcher: BRIDGE_LAUNCHER,
+    error: result.error?.message || "",
+  };
+}
+
+async function resetCaptureRuntimeDirs() {
+  await fs.rm(CAPTURE_STATE_DIR, { recursive: true, force: true });
+  await fs.rm(CAPTURE_WORKSPACE_ROOT, { recursive: true, force: true });
+  await fs.mkdir(CAPTURE_STATE_DIR, { recursive: true });
+  await fs.mkdir(CAPTURE_WORKSPACE_ROOT, { recursive: true });
+}
+
+function startLiteralBridge() {
+  const env = { ...process.env };
+  env.CODEX_LITERAL_STATE_DIR = CAPTURE_STATE_DIR;
+  env.CODEX_WORKSPACE_ROOT = CAPTURE_WORKSPACE_ROOT;
+
+  const maybePort = (() => {
+    try {
+      return String(normalizeCaptureUrl(CAPTURE_URL).port || "");
+    } catch {
+      return "";
+    }
+  })();
+  if (maybePort) {
+    env.CODEX_LITERAL_PORT = env.CODEX_LITERAL_PORT ?? maybePort;
+  }
+  return runBridgeCommand("start", env);
 }
 
 async function waitUntil(check, { timeoutMs = 45_000, intervalMs = 250, label = "condition" } = {}) {
@@ -338,14 +452,14 @@ function runFfmpeg(args) {
 async function buildAnimation() {
   const mp4Path = path.join(MEDIA_DIR, OUTPUT.demoMp4);
   const gifPath = path.join(MEDIA_DIR, OUTPUT.demoGif);
-  const palettePath = path.join(MEDIA_DIR, "real-message-demo-palette.png");
+  const palettePath = path.join(MEDIA_DIR, "message-demo-palette.png");
 
   const mp4 = runFfmpeg([
     "-y",
     "-framerate",
     "4",
     "-i",
-    "docs/media/real-message-frames/frame-%02d.png",
+    "docs/media/message-frames/frame-%02d.png",
     "-vf",
     "format=yuv420p",
     mp4Path,
@@ -381,29 +495,63 @@ async function buildAnimation() {
     return { ok: false, stage: "gif", stderr: gif.stderr.trim().slice(0, 2000) };
   }
 
-  return { ok: true, mp4Path, gifPath };
+  return { ok: true, mp4Path: toProjectRelative(mp4Path), gifPath: toProjectRelative(gifPath) };
 }
 
 async function capture() {
+  const bridgeReady = await waitForBridge(CAPTURE_URL);
+  if (!bridgeReady) {
+    await resetCaptureRuntimeDirs();
+    const startResult = startLiteralBridge();
+    if (!startResult.ok) {
+      throw new Error(
+        `Capture bridge not reachable at ${CAPTURE_URL}, and auto-start failed via ${startResult.launcher} (status ${startResult.status}).\n${
+          startResult.error || startResult.stderr || startResult.stdout || "No output."
+        }`
+      );
+    }
+
+    const readyAfterStart = await waitForBridge(CAPTURE_URL);
+    if (!readyAfterStart) {
+      throw new Error(
+        `Capture bridge auto-started, but ${healthzUrl(CAPTURE_URL)} did not become healthy within ${BRIDGE_BOOT_TIMEOUT_MS}ms.`
+      );
+    }
+  }
+
   await ensureDir();
   await fs.rm(FRAMES_DIR, { recursive: true, force: true });
   await fs.mkdir(FRAMES_DIR, { recursive: true });
 
-  const browser = await chromium.launch({
-    executablePath: CHROME_PATH,
+  const chromium = await loadChromium();
+  const launchOptions = {
     headless: true,
     args: ["--no-sandbox", "--disable-dev-shm-usage"],
-  });
+  };
+  if (CHROME_PATH) {
+    launchOptions.executablePath = CHROME_PATH;
+  }
+
+  let browser;
+  try {
+    browser = await chromium.launch(launchOptions);
+  } catch (error) {
+    const detail = error?.message || String(error);
+    const hint = CHROME_PATH
+      ? `Chromium launch failed with CHROMIUM_PATH=${CHROME_PATH}.`
+      : 'Chromium launch failed. Run "npx playwright install chromium" or set CHROMIUM_PATH.';
+    throw new Error(`${hint}\n${detail}`);
+  }
 
   const meta = {
-    url: URL,
+    url: CAPTURE_URL,
     capturedAt: new Date().toISOString(),
     outputs: OUTPUT,
   };
 
   try {
     const desktop = await browser.newPage({ viewport: { width: 1440, height: 920 } });
-    await desktop.goto(URL, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await desktop.goto(CAPTURE_URL, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await waitForHomeReady(desktop);
     await ensureGitRepoReady(desktop);
     await hardResetPanels(desktop);
@@ -411,7 +559,7 @@ async function capture() {
     await desktop.close();
 
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
-    await mobile.goto(URL, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await mobile.goto(CAPTURE_URL, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await waitForHomeReady(mobile);
     await ensureGitRepoReady(mobile);
     await hardResetPanels(mobile);
@@ -481,12 +629,12 @@ async function capture() {
 
     meta.promptText = PROMPT_TEXT;
     meta.animation = await buildAnimation();
-    await fs.writeFile(path.join(MEDIA_DIR, "real-capture-meta.json"), JSON.stringify(meta, null, 2));
+    await fs.writeFile(path.join(MEDIA_DIR, "capture-meta.json"), JSON.stringify(meta, null, 2));
 
-    console.log("Real capture complete");
+    console.log("Media capture complete");
     console.log(JSON.stringify(meta, null, 2));
   } finally {
-    await browser.close();
+    await browser?.close();
   }
 }
 

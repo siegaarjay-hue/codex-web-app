@@ -21,6 +21,11 @@ const BANNED_MEDIA = [
   "docs/media/real-mobile-sidebar-open-redacted.png",
   "docs/media/real-mobile-sidebar-demo-redacted.gif",
   "docs/media/real-mobile-sidebar-demo-redacted.mp4",
+  "docs/media/real-desktop-home.png",
+  "docs/media/real-mobile-home.png",
+  "docs/media/real-mobile-composer.png",
+  "docs/media/real-message-demo.gif",
+  "docs/media/real-message-demo.mp4",
 ];
 
 function unique(values) {
@@ -67,7 +72,7 @@ async function main() {
   }
 
   const bannedUsed = BANNED_MEDIA.filter((entry) => readme.includes(entry));
-  const hasRealMp4 = paths.includes("docs/media/real-message-demo.mp4");
+  const hasDemoMp4 = paths.includes("docs/media/message-demo.mp4");
 
   if (missing.length > 0) {
     throw new Error(`Missing media files referenced in README: ${missing.join(", ")}`);
@@ -77,8 +82,8 @@ async function main() {
     throw new Error(`README still references legacy generated media: ${bannedUsed.join(", ")}`);
   }
 
-  if (!hasRealMp4) {
-    throw new Error("README must reference docs/media/real-message-demo.mp4");
+  if (!hasDemoMp4) {
+    throw new Error("README must reference docs/media/message-demo.mp4");
   }
 
   console.log(`README media check passed (${paths.length} media references validated).`);
