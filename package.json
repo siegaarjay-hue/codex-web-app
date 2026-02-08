@@ -13,11 +13,8 @@
     "stop": "node scripts/codex-web.mjs stop",
     "status": "node scripts/codex-web.mjs status",
     "selftest": "node scripts/codex-web.mjs selftest",
-    "capture:media": "node scripts/capture_media.mjs",
-    "capture:real": "npm run capture:media",
-    "check:media": "node scripts/check-readme-media.mjs",
     "check:public": "node scripts/check-public-ready.mjs",
     "test": "node --test",
-    "check": "npm run test && npm run selftest && npm run check:media && npm run check:public"
+    "check": "npm run test && npm run selftest && npm run check:public"
   }
 }

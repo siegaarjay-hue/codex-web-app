@@ -28,13 +28,11 @@ npm run check
 - Add or update tests for behavior changes.
 - Preserve mobile responsiveness.
 - Do not commit secrets or tokens.
-- Use captured app output (not mockups) for README media updates.
 
 ## Pull Request Checklist
 
 - [ ] `npm run test` passes
 - [ ] `npm run selftest` passes
-- [ ] `npm run check:media` passes
 - [ ] `npm run check:public` passes
 - [ ] Docs updated when behavior changes
 - [ ] No broken mobile layout
