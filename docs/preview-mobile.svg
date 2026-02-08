@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="430" height="860" viewBox="0 0 430 860" role="img" aria-label="Mobile UI preview">
+  <rect width="430" height="860" fill="#e5e7eb"/>
+  <rect x="10" y="10" width="410" height="840" rx="28" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="34" y="58" fill="#111827" font-size="24" font-family="Arial, sans-serif" font-weight="700">New thread</text>
+  <text x="145" y="292" fill="#111827" font-size="56" font-family="Arial, sans-serif" font-weight="700">Let&apos;s</text>
+  <text x="126" y="344" fill="#111827" font-size="56" font-family="Arial, sans-serif" font-weight="700">build</text>
+  <rect x="34" y="390" width="362" height="86" rx="22" fill="#ffffff" stroke="#e5e7eb"/>
+  <rect x="34" y="494" width="362" height="86" rx="22" fill="#ffffff" stroke="#e5e7eb"/>
+  <rect x="34" y="598" width="362" height="86" rx="22" fill="#ffffff" stroke="#e5e7eb"/>
+  <text x="52" y="444" fill="#374151" font-size="26" font-family="Arial, sans-serif">Build a classic Snake game.</text>
+  <text x="52" y="548" fill="#374151" font-size="26" font-family="Arial, sans-serif">Create a one-page summary.</text>
+  <text x="52" y="652" fill="#374151" font-size="26" font-family="Arial, sans-serif">Summarize PRs by teammate.</text>
+  <rect x="34" y="726" width="362" height="94" rx="24" fill="#ffffff" stroke="#d1d5db"/>
+</svg>

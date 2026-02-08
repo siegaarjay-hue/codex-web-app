@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-label="Codex Web App banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1f2937"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="340" fill="url(#bg)" rx="24"/>
+  <g fill="#a7f3d0" opacity="0.15">
+    <circle cx="180" cy="70" r="48"/>
+    <circle cx="1020" cy="260" r="64"/>
+    <circle cx="930" cy="70" r="24"/>
+  </g>
+  <text x="80" y="145" fill="#f8fafc" font-size="56" font-family="Arial, sans-serif" font-weight="700">Codex Web App</text>
+  <text x="80" y="195" fill="#cbd5e1" font-size="30" font-family="Arial, sans-serif">Mobile-ready local web runtime with CI validation</text>
+  <rect x="80" y="228" width="300" height="56" rx="28" fill="#10b981"/>
+  <text x="120" y="265" fill="#042f2e" font-size="24" font-family="Arial, sans-serif" font-weight="700">npm run start</text>
+</svg>

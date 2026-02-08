@@ -1,0 +1,13 @@
+# Notice
+
+This repository packages a web UI bundle and related assets for local development and testing.
+
+Third-party names and marks:
+
+- "OpenAI" and "Codex" are trademarks of OpenAI.
+- This repository is not an official OpenAI distribution and is not affiliated with OpenAI.
+
+Asset ownership and redistribution:
+
+- Some bundled assets may be subject to third-party or upstream license/usage terms.
+- Before public redistribution, ensure you have rights to redistribute each bundled asset in `assets/`, `apps/`, and `colorcons/`.
