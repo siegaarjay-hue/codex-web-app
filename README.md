@@ -39,16 +39,16 @@ npm run stop
 ## Real Product Captures
 
 ### Desktop
-![Real Desktop Sidebar](docs/media/real-desktop-sidebar.png)
+![Real Desktop Sidebar (Redacted)](docs/media/real-desktop-sidebar-redacted.png)
 
 ### Mobile
 ![Real Mobile Home](docs/media/real-mobile-home.png)
-![Real Mobile Sidebar Open](docs/media/real-mobile-sidebar-open.png)
+![Real Mobile Sidebar Open (Redacted)](docs/media/real-mobile-sidebar-open-redacted.png)
 
 ### Sidebar Motion (Real)
-![Real Mobile Sidebar Demo](docs/media/real-mobile-sidebar-demo.gif)
+![Real Mobile Sidebar Demo (Redacted)](docs/media/real-mobile-sidebar-demo-redacted.gif)
 
-[Download the real MP4 capture](docs/media/real-mobile-sidebar-demo.mp4)
+[Download the real MP4 capture (redacted)](docs/media/real-mobile-sidebar-demo-redacted.mp4)
 
 ## Commands
 
@@ -83,11 +83,11 @@ npm run capture:real
 Outputs are written to `docs/media/`:
 
 - `real-desktop-home.png`
-- `real-desktop-sidebar.png`
+- `real-desktop-sidebar-redacted.png`
 - `real-mobile-home.png`
-- `real-mobile-sidebar-open.png`
-- `real-mobile-sidebar-demo.gif`
-- `real-mobile-sidebar-demo.mp4`
+- `real-mobile-sidebar-open-redacted.png`
+- `real-mobile-sidebar-demo-redacted.gif`
+- `real-mobile-sidebar-demo-redacted.mp4`
 
 Troubleshooting:
 

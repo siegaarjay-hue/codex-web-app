@@ -1,6 +1,6 @@
 {
   "url": "http://127.0.0.1:6070/",
-  "capturedAt": "2026-02-08T09:13:32.041Z",
+  "capturedAt": "2026-02-08T09:26:06.200Z",
   "states": {
     "desktop": {
       "sidebarOpened": true,
@@ -14,7 +14,7 @@
   },
   "animation": {
     "ok": true,
-    "mp4Path": "/data/data/com.termux/files/home/codex-web-app/docs/media/real-mobile-sidebar-demo.mp4",
-    "gifPath": "/data/data/com.termux/files/home/codex-web-app/docs/media/real-mobile-sidebar-demo.gif"
+    "mp4Path": "/data/data/com.termux/files/home/codex-web-app/docs/media/real-mobile-sidebar-demo-redacted.mp4",
+    "gifPath": "/data/data/com.termux/files/home/codex-web-app/docs/media/real-mobile-sidebar-demo-redacted.gif"
   }
 }

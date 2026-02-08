@@ -19,6 +19,14 @@ const CHROME_PATH =
 const REDACT_THREAD_HISTORY = process.env.CODEX_REDACT_THREAD_HISTORY !== "0";
 
 const FRAME_COUNT = 12;
+const OUTPUT = {
+  desktopHome: "real-desktop-home.png",
+  desktopSidebar: "real-desktop-sidebar-redacted.png",
+  mobileHome: "real-mobile-home.png",
+  mobileSidebarOpen: "real-mobile-sidebar-open-redacted.png",
+  mobileSidebarDemoMp4: "real-mobile-sidebar-demo-redacted.mp4",
+  mobileSidebarDemoGif: "real-mobile-sidebar-demo-redacted.gif",
+};
 
 async function ensureDir() {
   await fs.mkdir(MEDIA_DIR, { recursive: true });
@@ -98,46 +106,74 @@ async function isRightPaneOpen(page) {
   return isVisibleText(page, /Uncommitted changes/i);
 }
 
-async function setPrivacyMask(page, enabled) {
+async function setPrivacyMask(page, { showLeft = false, showRight = false } = {}) {
   if (!REDACT_THREAD_HISTORY) {
     return;
   }
 
-  await page.evaluate((isEnabled) => {
-    const id = "codex-capture-privacy-mask";
-    const existing = document.getElementById(id);
-
-    if (!isEnabled) {
-      existing?.remove();
-      return;
-    }
-
-    const mask = existing ?? document.createElement("div");
-    mask.id = id;
+  await page.evaluate((config) => {
+    const upsertMask = (id, styleFactory) => {
+      const existing = document.getElementById(id);
+      if (!styleFactory) {
+        existing?.remove();
+        return;
+      }
+      const mask = existing ?? document.createElement("div");
+      mask.id = id;
+      Object.assign(mask.style, styleFactory());
+      if (!existing) {
+        document.body.append(mask);
+      }
+    };
 
     const mobile = window.innerWidth <= 600;
-    const left = 14;
-    const top = mobile ? 170 : 180;
-    const width = mobile ? Math.max(window.innerWidth - 28, 0) : 260;
-    const height = mobile ? Math.min(window.innerHeight - 225, 560) : Math.min(window.innerHeight - 230, 640);
-
-    Object.assign(mask.style, {
+    const baseStyle = {
       position: "fixed",
-      left: `${left}px`,
-      top: `${top}px`,
-      width: `${width}px`,
-      height: `${height}px`,
       background: "rgb(243, 244, 246)",
       borderRadius: "12px",
       boxShadow: "inset 0 0 0 1px rgb(229, 231, 235)",
       pointerEvents: "none",
       zIndex: "2147483647",
-    });
+    };
 
-    if (!existing) {
-      document.body.append(mask);
-    }
-  }, enabled);
+    upsertMask(
+      "codex-capture-privacy-mask-left",
+      config.showLeft
+        ? () => {
+            const left = 12;
+            const top = mobile ? 150 : 152;
+            const width = mobile ? Math.max(window.innerWidth - 24, 0) : Math.min(340, Math.max(window.innerWidth - 24, 0));
+            const height = Math.max(window.innerHeight - top - 84, 220);
+            return {
+              ...baseStyle,
+              left: `${left}px`,
+              top: `${top}px`,
+              width: `${width}px`,
+              height: `${height}px`,
+            };
+          }
+        : null
+    );
+
+    upsertMask(
+      "codex-capture-privacy-mask-right",
+      config.showRight
+        ? () => {
+            const left = mobile ? 24 : Math.max(window.innerWidth - 430, 220);
+            const top = 44;
+            const width = Math.max(window.innerWidth - left - 8, 120);
+            const height = Math.max(window.innerHeight - top - 8, 180);
+            return {
+              ...baseStyle,
+              left: `${left}px`,
+              top: `${top}px`,
+              width: `${width}px`,
+              height: `${height}px`,
+            };
+          }
+        : null
+    );
+  }, { showLeft, showRight });
 }
 
 async function ensureRightPaneClosed(page) {
@@ -221,8 +257,8 @@ function runFfmpeg(args) {
 }
 
 async function buildAnimatedMedia() {
-  const mp4Path = path.join(MEDIA_DIR, "real-mobile-sidebar-demo.mp4");
-  const gifPath = path.join(MEDIA_DIR, "real-mobile-sidebar-demo.gif");
+  const mp4Path = path.join(MEDIA_DIR, OUTPUT.mobileSidebarDemoMp4);
+  const gifPath = path.join(MEDIA_DIR, OUTPUT.mobileSidebarDemoGif);
   const palettePath = path.join(MEDIA_DIR, "real-mobile-sidebar-palette.png");
 
   const mp4 = runFfmpeg([
@@ -294,15 +330,15 @@ async function capture() {
     const desktop = await browser.newPage({ viewport: { width: 1440, height: 920 } });
     await desktop.goto(URL, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await waitForHomeReady(desktop);
-    await desktop.screenshot({ path: path.join(MEDIA_DIR, "real-desktop-home.png"), fullPage: true });
+    await desktop.screenshot({ path: path.join(MEDIA_DIR, OUTPUT.desktopHome), fullPage: true });
 
     const desktopSidebarOpened = await ensureSidebarOpen(desktop);
     if (!desktopSidebarOpened) {
       throw new Error("Could not open desktop sidebar reliably");
     }
-    await setPrivacyMask(desktop, true);
-    await desktop.screenshot({ path: path.join(MEDIA_DIR, "real-desktop-sidebar.png"), fullPage: true });
-    await setPrivacyMask(desktop, false);
+    await setPrivacyMask(desktop, { showLeft: true, showRight: await isRightPaneOpen(desktop) });
+    await desktop.screenshot({ path: path.join(MEDIA_DIR, OUTPUT.desktopSidebar), fullPage: true });
+    await setPrivacyMask(desktop);
 
     const desktopSidebarClosed = await ensureSidebarClosed(desktop);
 
@@ -316,15 +352,15 @@ async function capture() {
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await mobile.goto(URL, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await waitForHomeReady(mobile);
-    await mobile.screenshot({ path: path.join(MEDIA_DIR, "real-mobile-home.png"), fullPage: true });
+    await mobile.screenshot({ path: path.join(MEDIA_DIR, OUTPUT.mobileHome), fullPage: true });
 
     const mobileSidebarOpened = await ensureSidebarOpen(mobile);
     if (!mobileSidebarOpened) {
       throw new Error("Could not open mobile sidebar reliably");
     }
-    await setPrivacyMask(mobile, true);
-    await mobile.screenshot({ path: path.join(MEDIA_DIR, "real-mobile-sidebar-open.png"), fullPage: true });
-    await setPrivacyMask(mobile, false);
+    await setPrivacyMask(mobile, { showLeft: true, showRight: await isRightPaneOpen(mobile) });
+    await mobile.screenshot({ path: path.join(MEDIA_DIR, OUTPUT.mobileSidebarOpen), fullPage: true });
+    await setPrivacyMask(mobile);
 
     const mobileSidebarClosed = await ensureSidebarClosed(mobile);
     if (!mobileSidebarClosed) {
@@ -338,14 +374,14 @@ async function capture() {
       } else {
         await ensureSidebarClosed(mobile);
       }
-      await setPrivacyMask(mobile, opening);
+      await setPrivacyMask(mobile, { showLeft: opening, showRight: await isRightPaneOpen(mobile) });
       await mobile.waitForTimeout(220);
       await mobile.screenshot({
         path: path.join(FRAMES_DIR, `frame-${String(i).padStart(2, "0")}.png`),
         fullPage: true,
       });
     }
-    await setPrivacyMask(mobile, false);
+    await setPrivacyMask(mobile);
 
     await mobile.close();
 
