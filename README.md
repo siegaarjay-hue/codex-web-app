@@ -5,9 +5,9 @@
 ![Mobile](https://img.shields.io/badge/mobile-first%20UX-1d4ed8)
 ![License](https://img.shields.io/badge/license-MIT-0f766e)
 
-Community-built Codex-style web app runtime with a focus on one thing: clean behavior on real phones.
+Community-built Codex-style web app runtime with mobile-oriented behavior and local tooling.
 
-No mockups in this README. Every screenshot and animation below was captured from a running literal bridge session.
+All screenshots and animations in this README were captured from a running literal bridge session.
 
 ![Real Desktop Home](docs/media/real-desktop-home.png)
 
@@ -28,13 +28,13 @@ Stop anytime:
 npm run stop
 ```
 
-## Why This Repo Feels Production-Ready
+## What's Included
 
-- Mobile composer flow is demoed with real type-and-send behavior.
-- Runtime controls are simple and memorable: `start`, `stop`, `status`, `selftest`.
-- CI enforces quality on every push and pull request to `main`.
-- Real media capture pipeline keeps README proof honest and reproducible.
-- Contributing docs, issue templates, and release checklist are already in place.
+- Mobile composer flow capture with real type-and-send behavior.
+- Runtime controls: `start`, `stop`, `status`, `selftest`.
+- CI checks on every push and pull request to `main`.
+- Reproducible media capture pipeline for README assets.
+- Contributor docs, issue templates, and release checklist.
 
 ## Real Product Captures
 
