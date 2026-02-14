@@ -33,15 +33,22 @@ function unique(values) {
 }
 
 function getReadmeMediaPaths(text) {
-  const imageOrLinkRegex = /!?\[[^\]]*\]\(([^)]+)\)/g;
+  const patterns = [
+    /!?\[[^\]]*\]\(([^)]+)\)/g,          // Markdown images/links: ![alt](path) or [text](path)
+    /<img[^>]+src=["']([^"']+)["'][^>]*>/gi, // HTML img tags: <img src="path" />
+    /<source[^>]+src=["']([^"']+)["'][^>]*>/gi, // HTML source tags: <source src="path" />
+    /<video[^>]+src=["']([^"']+)["'][^>]*>/gi,  // HTML video tags: <video src="path" />
+  ];
   const matches = [];
-  let match = imageOrLinkRegex.exec(text);
-  while (match) {
-    const raw = (match[1] || "").trim();
-    if (raw.startsWith("docs/media/")) {
-      matches.push(raw);
+  for (const regex of patterns) {
+    let match = regex.exec(text);
+    while (match) {
+      const raw = (match[1] || "").trim();
+      if (raw.startsWith("docs/media/")) {
+        matches.push(raw);
+      }
+      match = regex.exec(text);
     }
-    match = imageOrLinkRegex.exec(text);
   }
   return unique(matches);
 }
