@@ -160,6 +160,12 @@ codex-web-app/
   </tr>
 </table>
 
+### 🎬 Message Demo
+
+<video src="docs/media/message-demo.mp4" width="720" controls muted>
+  <img src="docs/media/message-demo.gif" alt="Message demo animation" width="720" />
+</video>
+
 ---
 
 ## 🧪 Visual Regression Testing
