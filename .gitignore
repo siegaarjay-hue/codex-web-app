@@ -1,4 +1,20 @@
+# Dependencies
 node_modules/
+
+# Runtime
 .runtime/
-server.log
 *.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Downloads (user-generated)
+downloads/
