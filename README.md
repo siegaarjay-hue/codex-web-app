@@ -100,7 +100,9 @@ npm run stop
 | `npm run test` | Run unit/integration tests |
 | `npm run selftest` | End-to-end validation (health, downloads, integrity) |
 | `npm run check:public` | Verify public-readiness guardrails |
-| `npm run check` | Run all checks (test + selftest + public validation) |
+| `npm run check` | Run all checks (test + selftest + public + media validation) |
+| `npm run capture:real` | Capture real screenshots/GIF/MP4 from the web bridge |
+| `npm run check:media` | Verify README media references are valid and not legacy |
 
 ---
 
@@ -157,6 +159,30 @@ codex-web-app/
     <td><img src="docs/media/mobile-composer.png" alt="Composer" width="200" /></td>
   </tr>
 </table>
+
+---
+
+## 🧪 Visual Regression Testing
+
+A lightweight visual regression check (`tests/mobile-sidebar.test.mjs`) captures the mobile sidebar at `390×844` in open and closed states and compares against baseline snapshots in `tests/snapshots/mobile/`. Run it via `npm run test`; it is automatically skipped when Playwright is not installed.
+
+---
+
+## 📸 Capturing Real Media Assets
+
+To regenerate the screenshots, GIF, and MP4 used in this README from a live web bridge:
+
+1. **Start the bridge / server:**
+   ```bash
+   npm run serve
+   ```
+2. **Run the capture script** (requires Playwright and ffmpeg):
+   ```bash
+   npm run capture:real
+   ```
+   This calls `scripts/capture_media.mjs`, which launches a headless browser, captures desktop and mobile screenshots, records a message-send animation, and produces `docs/media/` assets.
+3. **Output files** are saved to `docs/media/` — including `desktop-home.png`, `mobile-home.png`, `mobile-composer.png`, `message-demo.mp4`, and `message-demo.gif`.
+4. **Troubleshooting:** If captures show a loading spinner instead of the home screen, increase `CODEX_CAPTURE_BOOT_TIMEOUT_MS` (default 20 000 ms) or ensure the bridge is fully booted before running the script.
 
 ---
 
